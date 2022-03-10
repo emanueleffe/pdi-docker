@@ -1,0 +1,28 @@
+version: '2'
+services:
+  master:
+    image:
+      emanuelefiore:pdi
+    ports:
+      - "8181:8181"
+    environment:
+      - PDI_RELEASE=8.3
+      - PDI_VERSION=8.3.0.0-371
+      - CARTE_PORT=8181
+      - CARTE_IS_MASTER=Y
+      - CARTE_INCLUDE_MASTERS=N
+  slave:
+    image:
+      emanuelefiore:pdi
+    ports:
+      - "8182"
+    environment:
+      - PDI_RELEASE=8.3
+      - PDI_VERSION=8.3.0.0-371
+      - CARTE_PORT=8182
+      - CARTE_IS_MASTER=N
+      - CARTE_INCLUDE_MASTERS=Y
+      - CARTE_MASTER_HOSTNAME=master
+      - CARTE_MASTER_PORT=8181
+    links:
+      - master

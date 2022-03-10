@@ -1,0 +1,36 @@
+# based on: https://github.com/diethardsteiner/diethardsteiner.github.io/tree/master/sample-files/pdi/docker-pdi
+
+# build docker image
+# etl folder content will be copied to /home/pentaho/etl
+# lib folder content will be copied to /home/pentaho/data-integration/lib
+docker build -t emanuelefiore:pdi .
+
+################## AUTOMATIC EXECUTION WITH MASTER AND 1 SLAVE ###################
+# build and execution
+docker-compose up -d
+
+# scaling with n slave(s)
+docker-compose scale slave=n
+
+################## MANUAL EXECUTION WITH MASTER AND 1 SLAVE #####################
+# execution of docker master container
+docker run -d \
+-p 8181:8181 \
+-e PDI_RELEASE=8.3 \
+-e PDI_VERSION=8.3.0.0-371 \
+-e CARTE_PORT=8181 \
+--name kettle-container83 \
+emanuelefiore:pdi
+
+# execution of docker slave container
+docker run -d \
+-p 8182:8182 \
+-e PDI_RELEASE=8.3 \
+-e PDI_VERSION=8.3.0.0-371 \
+-e CARTE_PORT=8182 \
+-e CARTE_IS_MASTER=N \
+-e CARTE_INCLUDE_MASTERS=Y \
+-e CARTE_MASTER_HOSTNAME=kettle-container83 \
+-e CARTE_MASTER_PORT=8181 \
+--name kettle-container83-slave \
+emanuelefiore:pdi
